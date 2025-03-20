@@ -46,7 +46,7 @@ let
       </authentication>
 
       <paths>
-        <logdir>${cfg.logDir}</logdir>
+        <logdir>/var/log/icecast</logdir>
         <adminroot>${pkgs.icecast}/share/icecast/admin</adminroot>
         <webroot>${pkgs.icecast}/share/icecast/web</webroot>
         <alias source="/" dest="/status.xsl"/>
@@ -59,10 +59,6 @@ let
 
       <security>
         <chroot>0</chroot>
-        <changeowner>
-            <user>${cfg.user}</user>
-            <group>${cfg.group}</group>
-        </changeowner>
       </security>
 
       ${cfg.extraConf}
@@ -105,12 +101,6 @@ in
           description = "Username used for all administration functions.";
           default = "admin";
         };
-      };
-
-      logDir = mkOption {
-        type = types.path;
-        description = "Base directory used for logging.";
-        default = "/var/log/icecast";
       };
 
       listen = {
@@ -169,7 +159,6 @@ in
       wantedBy = [ "multi-user.target" ];
 
       preStart = ''
-        mkdir -p ${cfg.logDir} && chown ${cfg.user}:${cfg.group} ${cfg.logDir}
         ${pkgs.gawk}/bin/awk -f ${substituteSecrets} ${cfg.secretsFile} ${configFile} > /tmp/icecast.xml
         grep "@@" /tmp/icecast.xml && { echo "not all secrets substituted"; exit 1; } || true
       '';
@@ -182,6 +171,7 @@ in
         RestartSec = "3s";
         User = cfg.user;
         Group = cfg.group;
+        LogsDirectory = "icecast";
       };
     };
 
