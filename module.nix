@@ -17,6 +17,9 @@ let
 
   cfg = config.services.icecast;
 
+  # This awk script reads KEY=VALUE pairs from the first input file and
+  # substitutes all @@KEY@@ with VALUE in the second file. This is used to
+  # inject secrets into a private copy of the config file from /nix/store.
   substituteSecrets = pkgs.writeText "substitute-secrets.awk" ''
     NR == FNR {
       split($0, kv, "=")
@@ -31,6 +34,8 @@ let
     }
   '';
 
+  # The globally-readable config file in /nix/store.
+  # All secrets are referenced by @@NAME@@ and injected at service start.
   configFile = pkgs.writeText "icecast.xml" ''
     <icecast>
       <hostname>${cfg.hostname}</hostname>
