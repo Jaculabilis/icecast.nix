@@ -8,6 +8,12 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  nixos-shell.mounts = {
+    mountHome = false;
+    mountNixProfile = false;
+    cache = "none";
+  };
+
   virtualisation.forwardPorts = [
     {
       from = "host";
