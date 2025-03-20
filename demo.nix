@@ -13,6 +13,7 @@
   '';
 
   services.icecast = {
+    enable = true;
     # Point this to your secrets file
     secretsFile = "/etc/icecast-secrets";
   };

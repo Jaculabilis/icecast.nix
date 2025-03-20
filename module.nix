@@ -7,6 +7,7 @@
 
 let
   inherit (lib)
+    mkEnableOption
     mkOption
     mkRemovedOptionModule
     types
@@ -72,6 +73,8 @@ in
   options = {
 
     services.icecast = {
+      enable = mkEnableOption "Icecast network audio streaming server";
+
       secretsFile = mkOption {
         type = types.str;
         description = ''
@@ -85,7 +88,7 @@ in
   };
 
   # Module implementation
-  config = {
+  config = mkIf cfg.enable {
 
     systemd.services.icecast = {
       after = [ "network.target" ];
