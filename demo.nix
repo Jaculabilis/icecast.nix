@@ -5,15 +5,24 @@
   ...
 }:
 {
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  # Icecast demo config
 
-  nixos-shell.mounts = {
-    mountHome = false;
-    mountNixProfile = false;
-    cache = "none";
+  # Normally you'd put these somewhere secret
+  environment.etc."icecast-secrets".text = ''
+    ADMIN_PASSWORD=secure
+  '';
+
+  services.icecast = {
+    # Point this to your secrets file
+    secretsFile = "/etc/icecast-secrets";
   };
 
+  # Demo VM config
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  nixos-shell.mounts.mountHome = false;
+  nixos-shell.mounts.mountNixProfile = false;
+  nixos-shell.mounts.cache = "none";
   virtualisation.forwardPorts = [
     {
       from = "host";
@@ -21,15 +30,6 @@
       guest.port = 8000;
     }
   ];
-
-  environment.etc."icecast-secrets".text = ''
-    ADMIN_PASSWORD=secure
-  '';
-
-  services.icecast = {
-    secretsFile = "/etc/icecast-secrets";
-  };
-
   system.stateVersion = "24.11";
 }
 
