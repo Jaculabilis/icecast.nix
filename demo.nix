@@ -14,8 +14,12 @@
 
   services.icecast = {
     enable = true;
+    listen.address = "0.0.0.0";
     # Point this to your secrets file
     secretsFile = "/etc/icecast-secrets";
+    extraConf = ''
+      <location>A NixOS container</location>
+    '';
   };
 
   # Demo VM config
