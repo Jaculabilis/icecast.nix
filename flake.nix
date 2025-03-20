@@ -29,5 +29,15 @@
           pkgs.nixos-shell
         ];
       };
+
+      nixosModules.default = import ./module.nix;
+
+      nixosConfigurations."demo" = nixosSystem {
+        inherit system;
+        modules = [
+          self.nixosModules.default
+          ./demo.nix
+        ];
+      };
     };
 }
