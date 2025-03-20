@@ -8,6 +8,7 @@
 let
   inherit (lib)
     mkOption
+    mkRemovedOptionModule
     types
     ;
 
@@ -59,6 +60,15 @@ let
   '';
 in
 {
+  # Disable the upstream module and warn for removed options
+  disabledModules = [ "services/audio/icecast.nix" ];
+  imports = [
+    (mkRemovedOptionModule [ "services" "icecast" "admin" "password" ] ''
+      Instead of specifying a cleartext password, add the password to the file named in `services.icecast.secretsFile`.
+    '')
+  ];
+
+  # Module interface
   options = {
 
     services.icecast = {
@@ -74,6 +84,7 @@ in
 
   };
 
+  # Module implementation
   config = {
 
     systemd.services.icecast = {
