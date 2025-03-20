@@ -6,6 +6,12 @@
 }:
 
 let
+  inherit (lib)
+    mkOption
+    types
+    ;
+
+  cfg = config.services.icecast;
 
   substituteSecrets = pkgs.writeText "substitute-secrets.awk" ''
     NR == FNR {
@@ -53,6 +59,20 @@ let
   '';
 in
 {
+  options = {
+
+    services.icecast = {
+      secretsFile = mkOption {
+        type = types.str;
+        description = ''
+          Path to a file containing secrets in the form NAME=VALUE.
+          These will be substituted into the config for each occurrence of "@@NAME@@".
+          It must contain the admin password as ADMIN_PASSWORD=...
+        '';
+      };
+    };
+
+  };
 
   config = {
 
@@ -63,7 +83,7 @@ in
 
       preStart = ''
         mkdir -p /var/log/icecast && chown nobody:nogroup /var/log/icecast
-        ${pkgs.gawk}/bin/awk -f ${substituteSecrets} /etc/icecast-secrets ${configFile} > /tmp/icecast.xml
+        ${pkgs.gawk}/bin/awk -f ${substituteSecrets} ${cfg.secretsFile} ${configFile} > /tmp/icecast.xml
         grep "@@" /tmp/icecast.xml && { echo "not all secrets substituted"; exit 1; } || true
       '';
       serviceConfig = {

@@ -26,6 +26,10 @@
     ADMIN_PASSWORD=secure
   '';
 
+  services.icecast = {
+    secretsFile = "/etc/icecast-secrets";
+  };
+
   system.stateVersion = "24.11";
 }
 
