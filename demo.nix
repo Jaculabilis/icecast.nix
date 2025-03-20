@@ -22,6 +22,10 @@
     }
   ];
 
+  environment.etc."icecast-secrets".text = ''
+    ADMIN_PASSWORD=secure
+  '';
+
   system.stateVersion = "24.11";
 }
 
