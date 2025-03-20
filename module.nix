@@ -146,25 +146,21 @@ in
       description = "Icecast service user";
       isSystemUser = true;
     };
-    users.groups.${cfg.group} = {};
+    users.groups.${cfg.group} = { };
 
     systemd.services.icecast = {
       after = [
         "network.target"
-        # For some reason, icecast fails with "Could not create listener socket" if it starts before dhcpcd is ready.
-        # I can't even find where that error message is logged in the source code.
-        "dhcpcd.service"
       ];
       description = "Icecast Network Audio Streaming Server";
       wantedBy = [ "multi-user.target" ];
-
+      # This is where the secret substitution occurs
       preStart = ''
         ${pkgs.gawk}/bin/awk -f ${substituteSecrets} ${cfg.secretsFile} ${configFile} > /tmp/icecast.xml
         grep "@@" /tmp/icecast.xml && { echo "not all secrets substituted"; exit 1; } || true
       '';
       serviceConfig = {
         Type = "simple";
-        PrivateTmp = true;
         ExecStart = "${pkgs.icecast}/bin/icecast -c /tmp/icecast.xml";
         ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
         Restart = "always";
@@ -172,6 +168,25 @@ in
         User = cfg.user;
         Group = cfg.group;
         LogsDirectory = "icecast";
+        # Hardening options
+        # See https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html
+        CapabilityBoundingSet = "";
+        LockPersonality = true;
+        NoNewPrivileges = true;
+        PrivateDevices = true;
+        PrivateTmp = true;
+        PrivateUsers = true;
+        ProtectClock = true;
+        ProtectControlGroups = true;
+        ProtectHome = true;
+        ProtectHostname = true;
+        ProtectKernelLogs = true;
+        ProtectKernelModules = true;
+        ProtectKernelTunables = true;
+        ProtectProc = "invisible";
+        ProtectSystem = "full";
+        RestrictNamespaces = true;
+        RestrictSUIDSGID = true;
       };
     };
 
