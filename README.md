@@ -29,5 +29,9 @@ Any unsubstituted secret will cause the service to fail to start.
 Note also that the default value for `listen.address` has changed to `127.0.0.1`,
 so it must be explicitly set to a publicly-accessible address to expose the service.
 
+## Demo
+
 For an example of using this module, see the configuration in [demo.nix](./demo.nix),
-which can also be launched via `nixos-shell`.
+which can also be launched via `nixos-shell --flake .#demo`.
+
+For an example of using [Liquidsoap](https://www.liquidsoap.info/doc-2.2.5/) to stream audio to the Icecast server, see the source defined in `source.nix`, which can be run as `nix run .#demo-source`.
