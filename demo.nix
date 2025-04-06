@@ -10,6 +10,7 @@
   # Normally you'd put these somewhere secret
   environment.etc."icecast-secrets".text = ''
     ADMIN_PASSWORD=secure
+    SOURCE_PASSWORD=unguessable
   '';
 
   services.icecast = {
@@ -19,6 +20,10 @@
     secretsFile = "/etc/icecast-secrets";
     extraConf = ''
       <location>A NixOS container</location>
+
+      <authentication>
+        <source-password>@@SOURCE_PASSWORD@@</source-password>
+      </authentication>
     '';
   };
 
